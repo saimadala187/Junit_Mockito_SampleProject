@@ -12,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Method;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -91,13 +93,7 @@ public class StudentServiceTest {
         System.out.println("Test Case for exception executed successfully");
     }
 
-    //Testing for Private Methods
-    // Note: Private methods are not directly testable.
-    // Instead, you test the public methods that use them.
-    // If you need to test private methods, consider refactoring them into a separate class or making them package-private.
-    // For example, if you had a private method in StudentService:
-
-    // You would write a test for getFormattedStudentName instead of trying to test formatStudentName directly.
+    //Testing private methods indirectly
     @Test
     public void testPrivateMethodIndirectly() {
         // Arrange
@@ -112,5 +108,21 @@ public class StudentServiceTest {
         // Assert
         assertEquals("ALICE", formattedName);
         System.out.println("Test Case for private method executed successfully");
+    }
+
+    //Test private methods another way using reflection
+    @Test
+    public void testPrivateMethodUsingReflection() throws Exception {
+        Student mockStudent = new Student();
+        mockStudent.setName("Bob");
+
+        // Use reflection to access the private method
+        Method method = StudentService.class.getDeclaredMethod("formatStudentName", Student.class);
+        method.setAccessible(true);
+
+        String formattedName = (String) method.invoke(studentService, mockStudent);
+
+        assertEquals("BOB", formattedName);
+        System.out.println("Test Case for private method using reflection executed successfully");
     }
 }
